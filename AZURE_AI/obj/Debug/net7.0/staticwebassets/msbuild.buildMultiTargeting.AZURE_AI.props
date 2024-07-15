@@ -1,0 +1,3 @@
+﻿<Project>
+  <Import Project="..\build\AZURE_AI.props" />
+</Project>

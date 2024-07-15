@@ -1,0 +1,75 @@
+﻿@page
+@model IndexModel
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Column Checker</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
+
+    <script>
+        function toggleColumns(tableCheckbox) {
+            var isChecked = tableCheckbox.checked;
+            var columns = tableCheckbox.parentElement.querySelectorAll('ul li input[type="checkbox"]');
+            columns.forEach(function (columnCheckbox) {
+                columnCheckbox.checked = isChecked;
+            });
+        }
+
+        function columnChecked() {
+            var checkedColumns = [];
+            var tables = document.querySelectorAll('#screen-two > div');
+
+            tables.forEach(function (table) {
+                var tableName = table.querySelector('i').nextSibling.textContent.trim();
+                var columns = table.querySelectorAll('ul li input[type="checkbox"]:checked');
+
+                columns.forEach(function (columnCheckbox) {
+                    var columnName = columnCheckbox.dataset.column;
+                    checkedColumns.push({ table: tableName, column: columnName });
+                });
+            });
+            var checkedColumnsJson = JSON.stringify(checkedColumns);
+            document.getElementById('Structure').value = checkedColumnsJson;
+            // document.getElementById('Query').value = @Model.Query;
+            document.getElementById('yourForm').submit();
+            console.log(checkedColumns);
+            console.log(checkedColumnsJson);
+        }
+    </script>
+</head>
+<body>
+    
+        <div class="row">
+            <div class="col-md-6 mt-4">
+                <div id="screen-two">
+                   
+                    @if (Model.DatabaseSchema != null)
+                    {
+                        foreach (var table in Model.DatabaseSchema)
+                        {
+                            <div>
+                                <i class="fas fa-folder"></i> @table.TableName <input type="checkbox" onclick="toggleColumns(this)">
+                                <ul>
+                                    @foreach (var column in table.Columns)
+                                    {
+                                        <li><i class="fas fa-th"></i> @column <input type="checkbox" data-column="@column"></li>
+                                    }
+                                </ul>
+                            </div>
+                        }
+                    }
+                </div>
+            </div>
+        </div>
+    <form method="post" asp-page="./Index" id="yourForm">
+        <input type="hidden" id="Structure" name="Structure" />
+        <input type="hidden" id="Query" name="Query" />
+        <button type="button" onclick="columnChecked()">Submit</button>
+    </form>
+</body>
+</html>
+
+
+
